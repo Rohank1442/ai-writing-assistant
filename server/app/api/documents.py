@@ -53,9 +53,10 @@ async def upload_pdf(
         )
     
     try:
+        print("Starting PDF upload and processing...")
         # Generate unique document ID
         doc_id = uuid4()
-        
+        print(f"Generated document ID: {doc_id}")
         # Stage 1: Create document record in DB (status: "ingested")
         document_record = supabase.table("documents").insert({
             "id": str(doc_id),
