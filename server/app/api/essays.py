@@ -31,6 +31,21 @@ async def generate_section(
     # 3. THE UPDATE
     # Save this text into your 'essays' table so the user sees it on the frontend
     # (Assuming you have an 'content' JSON column in your essays table)
+
+    try:
+        current_essay = supabase.table("essays").select("content").eq("id", essay_id).single().execute()
+    except Exception:
+        raise HTTPException(status_code=404, detail="Essay not found. Did you use the correct Essay ID?")
+    essay_content = current_essay.data.get("content") or {}
+
+    # Add the new section to our dictionary
+    essay_content[header] = section_text
+
+    # Update the record in Supabase
+    supabase.table("essays").update({
+        "content": essay_content
+    }).eq("id", essay_id).execute()
+
     return {
         "header": header,
         "content": section_text,
@@ -62,7 +77,7 @@ async def create_outline(
     # We save the outline so the user can edit it on the frontend
     essay_record = supabase.table("essays").insert({
         "user_id": current_user.id,
-        "document_id": document_id,
+        "doc_id": document_id,
         "title": topic,
         "outline": outline_json, # Store the structure
         "status": "drafting"

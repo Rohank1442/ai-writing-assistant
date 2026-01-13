@@ -17,7 +17,7 @@ from app.core.config import settings
 from uuid import UUID
 
 # Configure Gemini API
-genai.configure(api_key=settings.GOOGLE_API_KEY)
+genai.configure(api_key=settings.GEMINI_API_KEY)
 
 class PDFProcessingService:
     def __init__(self):

@@ -4,7 +4,7 @@ from app.core.config import settings
 class AIService:
     def __init__(self):
         genai.configure(api_key=settings.GEMINI_API_KEY)
-        self.model = genai.GenerativeModel('gemini-1.5-flash')
+        self.model = genai.GenerativeModel('gemini-2.5-flash')
 
     def get_embedding(self, text: str):
         """Turns text into a 768-dimension vector."""

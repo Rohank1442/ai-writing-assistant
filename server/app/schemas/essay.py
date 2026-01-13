@@ -4,21 +4,22 @@ from uuid import UUID
 from datetime import datetime
 
 class EssayBase(BaseModel):
-    doc_id: UUID
+    document_id: UUID
+    title: str
 
 class EssayCreate(EssayBase):
-    outline: Optional[dict] = None
-    content: Optional[dict] = None
+    pass
 
 class EssayUpdate(BaseModel):
     outline: Optional[dict] = None
-    content: Optional[dict] = None
+    full_content: Optional[str] = None
+    status: Optional[str] = None
 
 class EssayResponse(EssayBase):
     id: UUID
     user_id: UUID
     outline: dict
-    content: dict
+    status: str
     created_at: datetime
 
     class Config:
