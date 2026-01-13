@@ -1,3 +1,10 @@
+from app.core.security import get_current_user, supabase
+from app.services.ai_services import AIService
+from fastapi import APIRouter, Depends, HTTPException
+from app.services.essay_services import get_grounding_context
+
+router = APIRouter()
+
 @router.post("/{essay_id}/generate-section")
 async def generate_section(
     essay_id: str, 
@@ -7,6 +14,10 @@ async def generate_section(
 ):
     # 1. THE RETRIEVAL (The Librarian)
     # Find the most relevant chunks for this specific header
+    # get_grounding_context steps:
+    #   - Embed the header using AIService.get_embedding
+    #   - Vector search against doc_chunks for document_id
+    #   - Return top N relevant chunks as context
     context = await get_grounding_context(query_text=header, doc_id=document_id)
     
     if not context:
