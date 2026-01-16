@@ -16,7 +16,8 @@ export default function Dashboard() {
   const fetchDocuments = async () => {
     try {
       const docs = await documentsApi.list();
-      setDocuments(docs);
+      console.log('Fetched documents:', docs);
+      setDocuments(docs.documents ?? []);
     } catch (error) {
       console.error('Failed to fetch documents:', error);
     } finally {
@@ -29,8 +30,8 @@ export default function Dashboard() {
   }, []);
 
   const handleDocumentClick = (doc: Document) => {
-    if (doc.status === 'ready') {
-      navigate(`/essays/new?doc=${doc.doc_id}`);
+    if (doc.status === 'completed') {
+      navigate(`/essays/new?doc=${doc.id}`);
     }
   };
 
@@ -87,7 +88,7 @@ export default function Dashboard() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {documents.map((doc) => (
                 <DocumentCard
-                  key={doc.doc_id}
+                  key={doc.id}
                   document={doc}
                   onClick={() => handleDocumentClick(doc)}
                 />

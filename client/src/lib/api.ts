@@ -93,11 +93,10 @@ export const authApi = {
 
 // Documents API
 export interface Document {
-  doc_id: string;
-  filename: string;
-  status: string;
-  chunks_count?: number;
-  created_at?: string;
+  id: string;
+  file_name: string;
+  status: 'completed' | 'processing' | 'failed';
+  created_at: string;
 }
 
 export interface UploadResponse {

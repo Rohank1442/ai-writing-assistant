@@ -24,3 +24,11 @@ class EssayResponse(EssayBase):
 
     class Config:
         from_attributes = True
+
+class GenerateOutlineRequest(BaseModel):
+    document_id: str
+    topic: str
+
+class GenerateSectionRequest(BaseModel):
+    header: str
+    document_id: str

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { OutlineItem } from '@/components/essays/OutlineItem';
@@ -31,10 +31,49 @@ export default function EssayEditor() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    if (docId) {
-      documentsApi.get(docId).then(setDocument).catch(console.error);
+    if (!docId || docId === 'undefined') {
+      return;
     }
+
+    console.log('EssayEditor docId:', docId);
+
+    documentsApi.get(docId)
+      .then(setDocument)
+      .catch(console.error);
   }, [docId]);
+
+  // Parse outline once and use everywhere
+  const outlineArray = useMemo(() => {
+    if (!essay?.outline) return [];
+
+    try {
+      let result;
+      // Parse if it's a string
+      if (typeof essay.outline === "string") {
+        const parsed = JSON.parse(essay.outline);
+        // The API returns {title: "...", outline: [...]}
+        // We need just the outline array
+        result = parsed.outline || parsed;
+      } else if (Array.isArray(essay.outline)) {
+        result = essay.outline;
+      } else if (typeof essay.outline === "object" && essay.outline.outline) {
+        // If it's already an object with an outline property
+        result = essay.outline.outline;
+      } else {
+        result = essay.outline;
+      }
+      
+      return Array.isArray(result) ? result : [];
+    } catch (e) {
+      console.error("Invalid outline JSON", e);
+      return [];
+    }
+  }, [essay]);
+
+  // Calculate progress using outlineArray
+  const completedSections = outlineArray.filter((item) => content[item.header]).length;
+  const totalSections = outlineArray.length;
+  const progress = totalSections > 0 ? (completedSections / totalSections) * 100 : 0;
 
   const handleGenerateOutline = async () => {
     if (!docId || !topic) return;
@@ -69,8 +108,8 @@ export default function EssayEditor() {
   };
 
   const getFullText = () => {
-    if (!essay) return '';
-    return essay.outline
+    if (!essay || outlineArray.length === 0) return '';
+    return outlineArray
       .map((item) => {
         const sectionContent = content[item.header] || '';
         return `## ${item.header}\n\n${sectionContent}`;
@@ -95,11 +134,7 @@ export default function EssayEditor() {
     URL.revokeObjectURL(url);
   };
 
-  const completedSections = essay 
-    ? essay.outline.filter((item) => content[item.header]).length 
-    : 0;
-  const totalSections = essay?.outline.length || 0;
-  const progress = totalSections > 0 ? (completedSections / totalSections) * 100 : 0;
+  console.log('EssayEditor essay:', essay);
 
   return (
     <AppLayout>
@@ -217,7 +252,7 @@ export default function EssayEditor() {
 
               {/* Outline items */}
               <div className="space-y-0">
-                {essay.outline.map((item, index) => (
+                {outlineArray.map((item, index) => (
                   <OutlineItem
                     key={item.header}
                     item={item}

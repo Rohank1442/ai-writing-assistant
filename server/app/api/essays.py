@@ -2,16 +2,18 @@ from app.core.security import get_current_user, supabase
 from app.services.ai_services import AIService
 from fastapi import APIRouter, Depends, HTTPException
 from app.services.essay_services import get_grounding_context
+from app.schemas.essay import GenerateOutlineRequest, GenerateSectionRequest
 
 router = APIRouter()
 
 @router.post("/{essay_id}/generate-section")
 async def generate_section(
-    essay_id: str, 
-    header: str, 
-    document_id: str,
+    essay_id: str,
+    payload: GenerateSectionRequest,
     current_user = Depends(get_current_user)
 ):
+    header = payload.header
+    document_id = payload.document_id
     # 1. THE RETRIEVAL (The Librarian)
     # Find the most relevant chunks for this specific header
     # get_grounding_context steps:
@@ -54,10 +56,11 @@ async def generate_section(
 
 @router.post("/generate-outline")
 async def create_outline(
-    document_id: str, 
-    topic: str,
+    payload: GenerateOutlineRequest,
     current_user = Depends(get_current_user)
 ):
+    document_id = payload.document_id
+    topic = payload.topic
     # 1. Fetch the 'Skimmed' content (First and last chunks)
     # This gives the AI the "Big Picture" without loading 500 chunks
     result = supabase.table("doc_chunks")\
@@ -83,4 +86,4 @@ async def create_outline(
         "status": "drafting"
     }).execute()
 
-    return essay_record.data
+    return essay_record.data[0]
