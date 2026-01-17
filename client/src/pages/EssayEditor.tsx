@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { OutlineItem } from '@/components/essays/OutlineItem';
-import { documentsApi, essaysApi, Document, Essay, OutlineItem as OutlineItemType } from '@/lib/api';
+import { documentsApi, essaysApi, Document, Essay } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,7 +20,8 @@ export default function EssayEditor() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const docId = searchParams.get('doc');
-  
+  const essayId = searchParams.get('essay'); // <--- New: existing essay
+
   const [document, setDocument] = useState<Document | null>(null);
   const [topic, setTopic] = useState('');
   const [essay, setEssay] = useState<Essay | null>(null);
@@ -30,39 +31,40 @@ export default function EssayEditor() {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
 
+  // Fetch document and existing essay if essayId is provided
   useEffect(() => {
-    if (!docId || docId === 'undefined') {
-      return;
-    }
-
-    console.log('EssayEditor docId:', docId);
+    if (!docId || docId === 'undefined') return;
 
     documentsApi.get(docId)
       .then(setDocument)
       .catch(console.error);
-  }, [docId]);
 
-  // Parse outline once and use everywhere
+    if (essayId) {
+      essaysApi.get(essayId)
+        .then((res) => {
+          setEssay(res);
+          setTopic(res.title || '');
+          setContent(res.content || {}); // load saved sections
+        })
+        .catch(console.error);
+    }
+  }, [docId, essayId]);
+
+  // Parse outline
   const outlineArray = useMemo(() => {
     if (!essay?.outline) return [];
-
     try {
       let result;
-      // Parse if it's a string
       if (typeof essay.outline === "string") {
         const parsed = JSON.parse(essay.outline);
-        // The API returns {title: "...", outline: [...]}
-        // We need just the outline array
         result = parsed.outline || parsed;
       } else if (Array.isArray(essay.outline)) {
         result = essay.outline;
-      } else if (typeof essay.outline === "object" && essay.outline.outline) {
-        // If it's already an object with an outline property
-        result = essay.outline.outline;
+      } else if (typeof essay.outline === "object" && essay.outline) {
+        result = essay.outline;
       } else {
         result = essay.outline;
       }
-      
       return Array.isArray(result) ? result : [];
     } catch (e) {
       console.error("Invalid outline JSON", e);
@@ -70,11 +72,12 @@ export default function EssayEditor() {
     }
   }, [essay]);
 
-  // Calculate progress using outlineArray
+  // Calculate progress
   const completedSections = outlineArray.filter((item) => content[item.header]).length;
   const totalSections = outlineArray.length;
   const progress = totalSections > 0 ? (completedSections / totalSections) * 100 : 0;
 
+  // Generate outline
   const handleGenerateOutline = async () => {
     if (!docId || !topic) return;
 
@@ -92,14 +95,15 @@ export default function EssayEditor() {
     }
   };
 
+  // Generate section
   const handleGenerateSection = async (header: string) => {
     if (!essay || !docId) return;
 
     setGeneratingSection(header);
 
     try {
-      const text = await essaysApi.generateSection(essay.id, header, docId);
-      setContent((prev) => ({ ...prev, [header]: text }));
+      const res = await essaysApi.generateSection(essay.id, header, docId);
+      setContent((prev) => ({ ...prev, [header]: res.content }));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate section');
     } finally {
@@ -110,10 +114,7 @@ export default function EssayEditor() {
   const getFullText = () => {
     if (!essay || outlineArray.length === 0) return '';
     return outlineArray
-      .map((item) => {
-        const sectionContent = content[item.header] || '';
-        return `## ${item.header}\n\n${sectionContent}`;
-      })
+      .map((item) => `## ${item.header}\n\n${content[item.header] || ''}`)
       .join('\n\n');
   };
 
@@ -127,14 +128,12 @@ export default function EssayEditor() {
     const text = getFullText();
     const blob = new Blob([text], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
-    const link = window.document.createElement('a');
+    const link = document.createElement('a');
     link.href = url;
     link.download = `${topic || 'essay'}.md`;
     link.click();
     URL.revokeObjectURL(url);
   };
-
-  console.log('EssayEditor essay:', essay);
 
   return (
     <AppLayout>
@@ -142,11 +141,11 @@ export default function EssayEditor() {
         <div className="max-w-3xl mx-auto">
           {/* Back button */}
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/essays')}
             className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Documents
+            Back to Essays
           </button>
 
           {/* Document info */}
@@ -156,13 +155,13 @@ export default function EssayEditor() {
                 <FileText className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-medium">{document.filename}</p>
+                <p className="font-medium">{document.file_name}</p>
                 <p className="text-sm text-muted-foreground">Source document</p>
               </div>
             </div>
           )}
 
-          {/* Topic input (Step A) */}
+          {/* Topic input (new essay) */}
           {!essay && (
             <div className="animate-fade-in">
               <h1 className="text-3xl font-serif font-bold mb-2">Create Essay</h1>
@@ -182,9 +181,7 @@ export default function EssayEditor() {
                   />
                 </div>
 
-                {error && (
-                  <p className="text-sm text-destructive">{error}</p>
-                )}
+                {error && <p className="text-sm text-destructive">{error}</p>}
 
                 <Button
                   onClick={handleGenerateOutline}
@@ -208,7 +205,7 @@ export default function EssayEditor() {
             </div>
           )}
 
-          {/* Outline & Editor (Step B & C) */}
+          {/* Outline & Editor */}
           {essay && (
             <div className="animate-fade-in">
               {/* Header */}
@@ -264,9 +261,7 @@ export default function EssayEditor() {
                 ))}
               </div>
 
-              {error && (
-                <p className="mt-4 text-sm text-destructive">{error}</p>
-              )}
+              {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
             </div>
           )}
         </div>

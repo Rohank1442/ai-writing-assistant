@@ -149,7 +149,7 @@ export interface OutlineItem {
 export interface Essay {
   id: string;
   doc_id: string;
-  topic?: string;
+  title?: string;
   outline: OutlineItem[];
   content: Record<string, string>;
   created_at?: string;
@@ -177,6 +177,22 @@ export const essaysApi = {
       throw new Error(error.detail || 'Failed to generate section');
     }
     const data = await response.json();
-    return data.text || data;
+    return data.content || data;
+  },
+
+    async list(): Promise<Essay[]> {
+    const response = await fetchWithAuth('/files');
+    if (!response.ok) {
+      throw new Error('Failed to fetch essays');
+    }
+    return response.json();
+  },
+
+  async get(essayId: string): Promise<Essay> {
+    const response = await fetchWithAuth(`/files/${essayId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch essay');
+    }
+    return response.json();
   },
 };

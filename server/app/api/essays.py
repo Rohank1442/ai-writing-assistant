@@ -2,18 +2,17 @@ from app.core.security import get_current_user, supabase
 from app.services.ai_services import AIService
 from fastapi import APIRouter, Depends, HTTPException
 from app.services.essay_services import get_grounding_context
-from app.schemas.essay import GenerateOutlineRequest, GenerateSectionRequest
+from app.schemas.essay import GenerateOutlineRequest
 
 router = APIRouter()
 
 @router.post("/{essay_id}/generate-section")
 async def generate_section(
     essay_id: str,
-    payload: GenerateSectionRequest,
+    header: str,
+    document_id: str,
     current_user = Depends(get_current_user)
 ):
-    header = payload.header
-    document_id = payload.document_id
     # 1. THE RETRIEVAL (The Librarian)
     # Find the most relevant chunks for this specific header
     # get_grounding_context steps:
@@ -87,3 +86,30 @@ async def create_outline(
     }).execute()
 
     return essay_record.data[0]
+
+@router.get("")
+async def list_essays(current_user = Depends(get_current_user)):
+    result = supabase.table("essays") \
+        .select("id, doc_id, title, status, created_at") \
+        .eq("user_id", current_user.id) \
+        .order("created_at", desc=True) \
+        .execute()
+
+    return result.data
+
+@router.get("/{essay_id}")
+async def get_essay(
+    essay_id: str,
+    current_user = Depends(get_current_user)
+):
+    result = supabase.table("essays") \
+        .select("*") \
+        .eq("id", essay_id) \
+        .eq("user_id", current_user.id) \
+        .single() \
+        .execute()
+
+    if not result.data:
+        raise HTTPException(status_code=404, detail="Essay not found")
+
+    return result.data
