@@ -1,4 +1,6 @@
-const BASE_URL = 'http://127.0.0.1:8000';
+import { supabase } from "./supabase";
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 function getAuthToken(): string | null {
   return localStorage.getItem('access_token');
@@ -13,17 +15,19 @@ function clearAuthToken(): void {
 }
 
 async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promise<Response> {
-  const token = getAuthToken();
-  const headers: HeadersInit = {
-    ...options.headers,
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token;
+
+  const headers: Record<string, string> = {
+    ...(options.headers as Record<string, string>),
   };
 
   if (token) {
-    (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+    headers['Authorization'] = `Bearer ${token}`;
   }
 
   if (!(options.body instanceof FormData)) {
-    (headers as Record<string, string>)['Content-Type'] = 'application/json';
+    headers['Content-Type'] = 'application/json';
   }
 
   const response = await fetch(`${BASE_URL}${endpoint}`, {
@@ -32,7 +36,7 @@ async function fetchWithAuth(endpoint: string, options: RequestInit = {}): Promi
   });
 
   if (response.status === 401) {
-    clearAuthToken();
+    await supabase.auth.signOut();
     window.location.href = '/login';
   }
 
@@ -106,7 +110,7 @@ export interface UploadResponse {
 }
 
 export const documentsApi = {
-  async upload(file: File, onProgress?: (progress: number) => void): Promise<UploadResponse> {
+  async upload(file: File): Promise<any> {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -119,11 +123,11 @@ export const documentsApi = {
       const error = await response.json();
       throw new Error(error.detail || 'Upload failed');
     }
-
+    
     return response.json();
   },
 
-  async list(): Promise<Document[]> {
+  async list(): Promise<any> {
     const response = await fetchWithAuth('/documents/');
     if (!response.ok) {
       throw new Error('Failed to fetch documents');

@@ -78,13 +78,13 @@ export function AppSidebar() {
 
       {/* Footer */}
       <div className="p-3 border-t border-sidebar-border space-y-1">
-        <Link
+        {/* <Link
           to="/settings"
           className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 transition-colors"
         >
           <Settings className="h-5 w-5 flex-shrink-0" />
           {!collapsed && <span>Settings</span>}
-        </Link>
+        </Link> */}
         
         <button
           onClick={handleLogout}

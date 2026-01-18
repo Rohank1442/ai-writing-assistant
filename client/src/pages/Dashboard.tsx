@@ -6,28 +6,38 @@ import { UploadZone } from '@/components/documents/UploadZone';
 import { documentsApi, Document } from '@/lib/api';
 import { FileText, Plus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Dashboard() {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
+  const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const fetchDocuments = async () => {
+    setIsLoading(true);
     try {
-      const docs = await documentsApi.list();
-      console.log('Fetched documents:', docs);
-      setDocuments(docs.documents ?? []);
+      const response = await documentsApi.list();
+      const docs = response.documents ?? response;
+
+      setDocuments(Array.isArray(docs) ? docs : []);
     } catch (error) {
       console.error('Failed to fetch documents:', error);
     } finally {
       setIsLoading(false);
     }
-  };
+};
 
   useEffect(() => {
-    fetchDocuments();
-  }, []);
+    if (!authLoading) {
+      if (user) {
+        fetchDocuments();
+      } else {
+        navigate('/login');
+      }
+    }
+  }, [user, authLoading]);
 
   const handleDocumentClick = (doc: Document) => {
     if (doc.status === 'completed') {

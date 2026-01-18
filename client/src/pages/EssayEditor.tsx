@@ -103,7 +103,16 @@ export default function EssayEditor() {
 
     try {
       const res = await essaysApi.generateSection(essay.id, header, docId);
-      setContent((prev) => ({ ...prev, [header]: res.content }));
+      const newContent = typeof res === 'string' ? res : (res.content || res);
+    
+      setContent((prev) => {
+        const updated = { 
+          ...prev, 
+          [header]: newContent 
+        };
+        console.log("Updated Content State:", updated);
+        return updated;
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate section');
     } finally {
