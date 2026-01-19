@@ -8,7 +8,8 @@ origins = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
     "http://192.168.1.14:8080",
-    "https://paperflow-ashen.vercel.app"
+    "paperflow-7tn3pw27z-rohans-projects-c605bf65.vercel.app"
+    "https://paperflow-ashen.vercel.app",
 ]
 
 app.add_middleware(
