@@ -41,7 +41,7 @@ export function AppSidebar() {
         {!collapsed && (
           <Link to="/dashboard" className="flex items-center gap-2">
             <BookOpen className="h-6 w-6 text-primary" />
-            <span className="font-semibold">ResearchAI</span>
+            <span className="font-semibold">PaperFlow</span>
           </Link>
         )}
         <Button

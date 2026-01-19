@@ -11,6 +11,9 @@ import Dashboard from "./pages/Dashboard";
 import Essays from "./pages/Essays";
 import EssayEditor from "./pages/EssayEditor";
 import NotFound from "./pages/NotFound";
+import OutlineLandingPage from "./pages/OutlineLandingPage";
+import { HelmetProvider } from "react-helmet-async";
+import AICitationLandingPage from "./pages/AICitationTool";
 
 const queryClient = new QueryClient();
 
@@ -20,17 +23,21 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/essays" element={<Essays />} />
-            <Route path="/essays/new" element={<EssayEditor />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <HelmetProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/tools/research-paper-essay-outline" element={<OutlineLandingPage />} />
+              <Route path="/ai-paper-writer-with-citations" element={<AICitationLandingPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/essays" element={<Essays />} />
+              <Route path="/essays/new" element={<EssayEditor />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </HelmetProvider>
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

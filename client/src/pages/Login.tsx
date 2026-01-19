@@ -66,7 +66,7 @@ export default function Login() {
         <div className="w-full max-w-md animate-fade-in">
           <div className="flex items-center gap-2 mb-8">
             <BookOpen className="h-8 w-8 text-primary" />
-            <span className="text-xl font-semibold">ResearchAI</span>
+            <span className="text-xl font-semibold">PaperFlow</span>
           </div>
 
           <h1 className="text-3xl font-serif font-bold mb-2">Welcome back</h1>
