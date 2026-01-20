@@ -7,6 +7,7 @@ app = FastAPI(title="AI Essay Writer")
 origins = [
     "http://localhost:8080",
     "https://paperflow-ai.vercel.app",
+    "https://paperflow-ashen.vercel.app",
 ]
 
 app.add_middleware(
