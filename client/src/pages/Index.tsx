@@ -56,7 +56,7 @@ export default function Index() {
           content="Write research papers using AI that actually reads your PDFs. Generate essays and outlines grounded in real academic sources."
         />
 
-        <link rel="canonical" href="https://yourdomain.com/" />
+        <link rel="canonical" href="https://paperflow-ai.vercel.app/" />
 
         {/* Open Graph */}
         <meta
@@ -117,10 +117,6 @@ export default function Index() {
       {/* HERO */}
       <section className="py-24 px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent text-accent-foreground text-sm font-medium mb-6">
-            <Sparkles className="h-4 w-4" />
-            Powered by RAG Technology
-          </div>
 
           <h1 className="text-5xl md:text-6xl font-serif font-bold mb-6">
             Write Research Papers with AI that{" "}

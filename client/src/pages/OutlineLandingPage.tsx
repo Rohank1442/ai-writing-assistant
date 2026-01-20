@@ -121,7 +121,7 @@ export default function OutlineLandingPage() {
 
         <link
           rel="canonical"
-          href="https://yourdomain.com/research-paper-essay-outline"
+          href="https://paperflow-ai.vercel.app/research-paper-essay-outline"
         />
 
         {/* Open Graph */}

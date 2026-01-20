@@ -26,7 +26,7 @@ export default function AICitationLandingPage() {
 
         <link
           rel="canonical"
-          href="https://yourdomain.com/ai-paper-writer-with-citations"
+          href="https://paperflow-ai.vercel.app/ai-paper-writer-with-citations"
         />
 
         {/* Open Graph */}

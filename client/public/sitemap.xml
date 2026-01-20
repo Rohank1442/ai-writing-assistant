@@ -6,7 +6,7 @@
 
   <!-- Homepage -->
   <url>
-    <loc>https://yourdomain.com/</loc>
+    <loc>https://paperflow-ai.vercel.app/</loc>
     <lastmod>2026-01-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -14,7 +14,7 @@
 
   <!-- AI Paper Writer with Citations -->
   <url>
-    <loc>https://yourdomain.com/ai-paper-writer-with-citations</loc>
+    <loc>https://paperflow-ai.vercel.app/ai-paper-writer-with-citations</loc>
     <lastmod>2026-01-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -22,7 +22,7 @@
 
   <!-- Research Paper Essay Outline Tool -->
   <url>
-    <loc>https://yourdomain.com/tools/research-paper-essay-outline</loc>
+    <loc>https://paperflow-ai.vercel.app/tools/research-paper-essay-outline</loc>
     <lastmod>2026-01-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -30,13 +30,13 @@
 
   <!-- Auth Pages (lower priority, optional but OK) -->
   <url>
-    <loc>https://yourdomain.com/login</loc>
+    <loc>https://paperflow-ai.vercel.app/login</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
 
   <url>
-    <loc>https://yourdomain.com/signup</loc>
+    <loc>https://paperflow-ai.vercel.app/signup</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
