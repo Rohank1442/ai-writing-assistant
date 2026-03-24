@@ -19,7 +19,7 @@ async def generate_section(
     #   - Embed the header using AIService.get_embedding
     #   - Vector search against doc_chunks for document_id
     #   - Return top N relevant chunks as context
-    print(f"Generating section for Essay ID: {essay_id}, Header: {header}, Document ID: {document_id}")
+    # print(f"Generating section for Essay ID: {essay_id}, Header: {header}, Document ID: {document_id}")
     context = await get_grounding_context(query_text=header, doc_id=document_id)
     
     if not context:

@@ -110,7 +110,6 @@ export default function EssayEditor() {
           ...prev, 
           [header]: newContent 
         };
-        console.log("Updated Content State:", updated);
         return updated;
       });
     } catch (err) {

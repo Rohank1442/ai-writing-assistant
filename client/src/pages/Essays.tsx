@@ -19,7 +19,7 @@ export default function Essays() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
-  console.log("essays: --------------> ",essays);
+  
   return (
     <AppLayout>
       <div className="p-8">
