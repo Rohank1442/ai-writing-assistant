@@ -10,17 +10,18 @@ Flow:
 
 from pypdf import PdfReader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-import google.generativeai as genai
+from google import genai                          # CHANGED
+from google.genai import types                    # CHANGED
 from io import BytesIO
 from typing import List, Dict, Tuple
 from app.core.config import settings
 from uuid import UUID
 
-# Configure Gemini API
-genai.configure(api_key=settings.GEMINI_API_KEY)
-
 class PDFProcessingService:
     def __init__(self):
+        self.client = genai.Client(
+            api_key=settings.GEMINI_API_KEY
+        )
         # Initialize text splitter with specified parameters
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
@@ -111,12 +112,12 @@ class PDFProcessingService:
         
         for text in texts:
             # Use Gemini's embedding model
-            result = genai.embed_content(
-                model="models/text-embedding-004",
-                content=text,
-                task_type="retrieval_document"
+            result = self.client.models.embed_content(
+                model="gemini-embedding-001",
+                contents=text,
+                config=types.EmbedContentConfig(task_type="RETRIEVAL_DOCUMENT")
             )
-            embeddings.append(result['embedding'])
+            embeddings.append(result.embeddings[0].values)
         
         return embeddings
     
